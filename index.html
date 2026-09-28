@@ -1,0 +1,547 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#17458F">
+<title>로타리 사무국 도우미</title>
+<style>
+:root{--blue:#17458F;--gold:#F7A81B;--bg:#f2f5fa;--line:#dde3ec;--txt:#1a2433;--mut:#687386;--ok:#2e9d5b;--red:#d14343;--amber:#c98100}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Noto Sans KR","Malgun Gothic","Apple SD Gothic Neo",sans-serif;background:var(--bg);color:var(--txt);font-size:15px}
+header{background:var(--blue);color:#fff;padding:10px 16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;border-bottom:4px solid var(--gold)}
+header h1{font-size:18px;margin:0}
+header .sub{font-size:12px;opacity:.8}
+.modesw{margin-left:auto;display:flex;background:rgba(255,255,255,.15);border-radius:20px;padding:3px}
+.modesw button{border:0;background:none;color:#fff;padding:6px 14px;border-radius:16px;cursor:pointer;font:inherit;font-size:14px}
+.modesw button.on{background:#fff;color:var(--blue);font-weight:700}
+nav{display:flex;gap:2px;background:#fff;border-bottom:1px solid var(--line);padding:0 8px;overflow-x:auto;position:sticky;top:0;z-index:4}
+nav button{border:0;background:none;padding:12px 13px;font-size:15px;color:var(--mut);cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap}
+nav button.on{color:var(--blue);border-color:var(--gold);font-weight:700}
+main{padding:14px;max-width:1280px;margin:0 auto}
+.card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:14px;margin-bottom:12px}
+.card h3{margin:0 0 10px;font-size:16px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:12px}
+.stat{background:#fff;border:1px solid var(--line);border-left:4px solid var(--blue);border-radius:10px;padding:10px 12px}
+.stat span{font-size:12px;color:var(--mut)}.stat b{display:block;font-size:22px;margin-top:2px}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:800px){.cols{grid-template-columns:1fr}}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{border-bottom:1px solid var(--line);padding:7px 6px;text-align:left;vertical-align:top}
+th{background:#f6f8fc;font-size:12px;color:var(--mut);font-weight:600;position:sticky;top:0}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+input,select,textarea{font:inherit;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:#fff;width:100%}
+textarea{min-height:70px}
+label{font-size:12px;color:var(--mut);display:block;margin-bottom:3px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+@media(max-width:640px){.g2,.g3{grid-template-columns:1fr}}
+.btn{border:0;border-radius:8px;padding:8px 13px;font:inherit;cursor:pointer;background:var(--blue);color:#fff;white-space:nowrap}
+.btn.g{background:#e8edf5;color:var(--txt)}.btn.r{background:var(--red)}.btn.y{background:var(--gold);color:#222}
+.btn.sm{padding:4px 9px;font-size:13px}
+a.btn{text-decoration:none;display:inline-block}
+.tag{display:inline-block;font-size:11px;padding:2px 7px;border-radius:20px;background:#eef1f6;color:#44506a;margin-right:3px}
+.tag.ok{background:#dff3e7;color:#1d6b3e}.tag.no{background:#ffe3e3;color:#9a1c1c}.tag.w{background:#fff1d0;color:#7a5200}
+.muted{color:var(--mut);font-size:12px}
+.note{background:#f4f8ff;border:1px solid #cddcf5;color:#27466f;padding:8px 10px;border-radius:8px;font-size:13px;margin:6px 0}
+.scroll{max-height:520px;overflow:auto}
+.att{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.att button{border:0;background:#fff;padding:5px 9px;cursor:pointer;font:inherit;font-size:13px}
+.att button.on.P{background:var(--ok);color:#fff}.att button.on.M{background:#3b82c4;color:#fff}.att button.on.A{background:var(--red);color:#fff}.att button.on.E{background:#8a93a3;color:#fff}
+.chk{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px dashed var(--line)}
+.chk input{width:auto}.chk.done span{text-decoration:line-through;color:var(--mut)}
+.modal-bg{position:fixed;inset:0;background:rgba(10,20,40,.45);display:none;align-items:flex-start;justify-content:center;z-index:20;overflow:auto;padding:30px 10px}
+.modal{background:#fff;border-radius:12px;max-width:760px;width:100%;padding:18px}
+.modal h2{margin:0 0 12px;font-size:18px}
+.foot{display:flex;gap:8px;justify-content:flex-end;margin-top:14px;flex-wrap:wrap}
+.toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:#222;color:#fff;padding:9px 16px;border-radius:20px;font-size:14px;display:none;z-index:60}
+#lock{position:fixed;inset:0;background:var(--blue);display:none;align-items:center;justify-content:center;z-index:50}
+#lock .box{background:#fff;padding:24px;border-radius:12px;width:280px;text-align:center}
+.hide{display:none}
+#print{display:none}
+@media print{body>*{display:none!important}#print{display:block!important;padding:10mm;font-size:12pt}#print table{font-size:11pt}#print th{position:static}}
+</style>
+</head>
+<body>
+<div id="lock"><div class="box"><h3 style="margin-top:0">잠금</h3><p class="muted">PIN을 입력하세요</p><input id="lockPin" type="password" inputmode="numeric"><br><br><button class="btn" id="lockBtn" style="width:100%">열기</button></div></div>
+<header>
+  <div><h1>로타리 사무국 도우미</h1><div class="sub" id="hSub"></div></div>
+  <div class="modesw"><button data-m="club">클럽 사무장</button><button data-m="district">지구 사무국</button></div>
+</header>
+<nav id="nav"></nav>
+<main id="main"></main>
+<div class="modal-bg" id="mbg"><div class="modal" id="modal"></div></div>
+<div class="toast" id="toast"></div>
+<div id="print"></div>
+<input type="file" id="filePick" class="hide" multiple>
+
+<script>
+/* ============ 데이터: 이 기기 브라우저(localStorage)에만 저장 ============ */
+const KEY='rotary_office_v1';
+const CLUB_SEED=[{"code":"111","region":"제1지역","name":"여수로타리클럽","members":42},{"code":"110","region":"제1지역","name":"여수좌수영로타리클럽","members":32},{"code":"104","region":"제1지역","name":"여수구봉로타리클럽","members":62},{"code":"106","region":"제1지역","name":"여수한려로타리클럽","members":46},{"code":"101","region":"제1지역","name":"여수진남로타리클럽","members":35},{"code":"105","region":"제1지역","name":"여수한울로타리클럽","members":29},{"code":"112","region":"제1지역","name":"여수상록수로타리클럽","members":20},{"code":"102","region":"제1지역","name":"여수해오름로타리클럽","members":46},{"code":"103","region":"제1지역","name":"여수거북선로타리클럽","members":55},{"code":"108","region":"제1지역","name":"여수사랑로타리클럽","members":47},{"code":"109","region":"제1지역","name":"여수낭만로타리클럽","members":14},{"code":"107","region":"제1지역","name":"여수한산 로타리클럽","members":13},{"code":"203","region":"제2지역","name":"여천로타리클럽","members":79},{"code":"207","region":"제2지역","name":"여수중앙 로타리클럽","members":61},{"code":"206","region":"제2지역","name":"여수산단로타리클럽","members":69},{"code":"208","region":"제2지역","name":"여수21세기로타리클럽","members":94},{"code":"204","region":"제2지역","name":"여수미래로타리클럽","members":35},{"code":"205","region":"제2지역","name":"여수백야 로타리클럽","members":22},{"code":"201","region":"제2지역","name":"여수오동도 로타리클럽","members":20},{"code":"202","region":"제2지역","name":"여수미항 로타리클럽","members":20},{"code":"307","region":"제3지역","name":"순천로타리클럽","members":30},{"code":"303","region":"제3지역","name":"순천승평로타리클럽","members":56},{"code":"305","region":"제3지역","name":"순천비봉로타리클럽","members":34},{"code":"306","region":"제3지역","name":"동순천로타리클럽","members":58},{"code":"301","region":"제3지역","name":"순천남산로타리클럽","members":68},{"code":"312","region":"제3지역","name":"구례로타리클럽","members":44},{"code":"302","region":"제3지역","name":"순천햇살로타리클럽","members":36},{"code":"310","region":"제3지역","name":"순천동행로타리클럽","members":8},{"code":"304","region":"제3지역","name":"순천드림로타리클럽","members":37},{"code":"311","region":"제3지역","name":"순천아리랑로타리클럽","members":30},{"code":"308","region":"제3지역","name":"순천신대 로타리클럽","members":24},{"code":"309","region":"제3지역","name":"전남라움 로타리클럽","members":32},{"code":"404","region":"제4지역","name":"순천중앙로타리클럽","members":101},{"code":"402","region":"제4지역","name":"순천남문로타리클럽","members":61},{"code":"403","region":"제4지역","name":"순천삼산로타리클럽","members":38},{"code":"405","region":"제4지역","name":"순천성화로타리클럽","members":80},{"code":"409","region":"제4지역","name":"순천이수로타리클럽","members":5},{"code":"407","region":"제4지역","name":"순천나누리로타리클럽","members":14},{"code":"406","region":"제4지역","name":"순천만 로타리클럽","members":20},{"code":"401","region":"제4지역","name":"순천초아 로타리클럽","members":26},{"code":"1013","region":"제4지역","name":"순천가온로타리클럽","members":63},{"code":"510","region":"제5지역","name":"곡성로타리클럽","members":55},{"code":"506","region":"제5지역","name":"광양로타리클럽","members":56},{"code":"509","region":"제5지역","name":"석곡로타리클럽","members":10},{"code":"502","region":"제5지역","name":"광양중앙로타리클럽","members":52},{"code":"508","region":"제5지역","name":"옥과로타리클럽","members":31},{"code":"505","region":"제5지역","name":"광양동백로타리클럽","members":91},{"code":"503","region":"제5지역","name":"광양그린로타리클럽","members":42},{"code":"504","region":"제5지역","name":"광양희망 로타리클럽","members":56},{"code":"501","region":"제5지역","name":"광양퍼플로타리클럽","members":90},{"code":"606","region":"제6지역","name":"동광양로타리클럽","members":60},{"code":"605","region":"제6지역","name":"광양백운로타리클럽","members":41},{"code":"601","region":"제6지역","name":"광양희양로타리클럽","members":93},{"code":"609","region":"제6지역","name":"광양좋은이웃로타리클럽","members":24},{"code":"602","region":"제6지역","name":"광양선샤인로타리클럽","members":93},{"code":"607","region":"제6지역","name":"광양매화로타리클럽","members":49},{"code":"608","region":"제6지역","name":"광양만로타리클럽","members":56},{"code":"604","region":"제6지역","name":"광양비전 로타리클럽","members":62},{"code":"603","region":"제6지역","name":"광양화랑 로타리클럽","members":50},{"code":"701","region":"제7지역","name":"벌교로타리클럽","members":32},{"code":"702","region":"제7지역","name":"고흥로타리클럽","members":44},{"code":"707","region":"제7지역","name":"보성로타리클럽","members":27},{"code":"703","region":"제7지역","name":"녹동로타리클럽","members":65},{"code":"705","region":"제7지역","name":"나로도로타리클럽","members":9},{"code":"706","region":"제7지역","name":"풍양로타리클럽","members":24},{"code":"704","region":"제7지역","name":"녹동비둘기로타리클럽","members":8},{"code":"802","region":"제8지역","name":"장흥로타리클럽","members":48},{"code":"804","region":"제8지역","name":"관산로타리클럽","members":54},{"code":"803","region":"제8지역","name":"장흥중앙로타리클럽","members":87},{"code":"806","region":"제8지역","name":"장흥정남진로타리클럽","members":26},{"code":"801","region":"제8지역","name":"장흥한솔로타리클럽","members":45},{"code":"805","region":"제8지역","name":"장흥청아 로타리클럽","members":36},{"code":"904","region":"제9지역","name":"강진로타리클럽","members":96},{"code":"905","region":"제9지역","name":"영암로타리클럽","members":36},{"code":"908","region":"제9지역","name":"영암신북로타리클럽","members":12},{"code":"907","region":"제9지역","name":"시종로타리클럽","members":43},{"code":"901","region":"제9지역","name":"강진탐진로타리클럽","members":121},{"code":"902","region":"제9지역","name":"강진모란로타리클럽","members":86},{"code":"903","region":"제9지역","name":"강진청자로타리클럽","members":76},{"code":"906","region":"제9지역","name":"영암아리랑 로타리클럽","members":32},{"code":"1009","region":"제10지역","name":"해남로타리클럽","members":98},{"code":"1010","region":"제10지역","name":"진도로타리클럽","members":48},{"code":"1001","region":"제10지역","name":"완도로타리클럽","members":54},{"code":"1003","region":"제10지역","name":"금일로타리클럽","members":38},{"code":"1011","region":"제10지역","name":"해남목련로타리클럽","members":51},{"code":"1004","region":"제10지역","name":"해남땅끝로타리클럽","members":29},{"code":"1008","region":"제10지역","name":"완도청해로타리클럽","members":55},{"code":"1002","region":"제10지역","name":"해남공룡로타리클럽","members":72},{"code":"1006","region":"제10지역","name":"완도고산로타리클럽","members":38},{"code":"1005","region":"제10지역","name":"진도백조로타리클럽","members":31},{"code":"1007","region":"제10지역","name":"완도화인로타리클럽","members":12}];
+const SEED_META={as_of:'2026-09-28',source_url:'https://www.rid3610.com/members/by-club'};
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+const FUNDS=['연차기금(AF)','폴리오플러스','영구기금','한국로타리장학문화재단','지구 기금','기타'];
+const MSTAT=['정회원','명예회원','휴회','퇴회'];
+const DOC_ST=['접수','처리중','완료'];
+
+function defaults(){return{
+  settings:{mode:'club',clubName:'순천중앙로타리클럽',clubCode:'404',district:'3610',officeName:'',bank:'',pin:'',
+    rulesUrl:'http://127.0.0.1:8894',districtUrl:'https://www.rid3610.com',
+    checklist:[
+      {id:'c1',title:'월간 출석 보고 작성·제출',day:5},
+      {id:'c2',title:'회원 변동(입회·퇴회) 지구 보고',day:5},
+      {id:'c3',title:'회비·기부 수납 현황 점검, 미납 안내',day:10},
+      {id:'c4',title:'이사회 회의록 정리·보관',day:15},
+      {id:'c5',title:'지구 공문 회신 기한 확인',day:20},
+      {id:'c6',title:'다음 달 주회 일정·연사 확정',day:25}]},
+  members:[],meetings:[],charges:[],donations:[],events:[],docs:[],checks:{},
+  d:{clubs:CLUB_SEED.map(c=>({...c,asOf:SEED_META.as_of,president:'',secretary:'',officeMgr:'',phone:'',email:'',memo:''})),
+     reports:{},fees:{},events:[],docs:[],checklist:[
+      {id:'d1',title:'클럽 월간 보고 수합 현황 확인·미제출 클럽 안내',day:10},
+      {id:'d2',title:'지역별 회원 현황 집계',day:12},
+      {id:'d3',title:'지구 분담금 수납 점검',day:15},
+      {id:'d4',title:'총재 월신·공문 발송 대장 정리',day:25}]}
+}}
+let DB;
+function load(){try{DB=JSON.parse(localStorage.getItem(KEY))||defaults()}catch(e){DB=defaults()}
+  const d=defaults();for(const k in d)if(DB[k]===undefined)DB[k]=d[k];
+  for(const k in d.settings)if(DB.settings[k]===undefined)DB.settings[k]=d.settings[k];
+  for(const k in d.d)if(DB.d[k]===undefined)DB.d[k]=d.d[k];}
+function save(){localStorage.setItem(KEY,JSON.stringify(DB))}
+load();
+
+/* ============ 유틸 ============ */
+const $=s=>document.querySelector(s);
+const $$=s=>[...document.querySelectorAll(s)];
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const pad=n=>String(n).padStart(2,'0');
+const ymd=d=>{d=new Date(d);return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`};
+const today=()=>ymd(Date.now());
+const thisMonth=()=>today().slice(0,7);
+const won=n=>(Number(n)||0).toLocaleString('ko-KR')+'원';
+const num=n=>(Number(n)||0).toLocaleString('ko-KR');
+const usd=n=>'$'+(Number(n)||0).toLocaleString('en-US',{maximumFractionDigits:2});
+const digits=s=>String(s||'').replace(/\D/g,'');
+const fmtPhone=s=>{const d=digits(s);return d.length===11?`${d.slice(0,3)}-${d.slice(3,7)}-${d.slice(7)}`:d.length===10?`${d.slice(0,3)}-${d.slice(3,6)}-${d.slice(6)}`:s||''};
+function ry(d){d=new Date(d||Date.now());const y=d.getFullYear(),m=d.getMonth()+1;return m>=7?`${y}-${pad((y+1)%100)}`:`${y-1}-${pad(y%100)}`}
+function ryRange(label){const y=+label.slice(0,4);return [`${y}-07-01`,`${y+1}-06-30`]}
+function toast(m){const t=$('#toast');t.textContent=m;t.style.display='block';clearTimeout(t._t);t._t=setTimeout(()=>t.style.display='none',2400)}
+function openModal(h){$('#modal').innerHTML=h;$('#mbg').style.display='flex'}
+function closeModal(){$('#mbg').style.display='none';$('#modal').innerHTML=''}
+$('#mbg').addEventListener('click',e=>{if(e.target.id==='mbg')closeModal()});
+function dl(name,text,type){const b=new Blob([text],{type});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),1500)}
+const csvCell=v=>`"${String(v??'').replace(/"/g,'""')}"`;
+const toCsv=rows=>'\ufeff'+rows.map(r=>r.map(csvCell).join(',')).join('\r\n');
+function parseCsv(t){t=t.replace(/^\ufeff/,'');const rows=[];let row=[],cur='',q=false;
+  for(let i=0;i<t.length;i++){const c=t[i];
+    if(q){if(c==='"'){if(t[i+1]==='"'){cur+='"';i++}else q=false}else cur+=c}
+    else if(c==='"')q=true;else if(c===','){row.push(cur);cur=''}
+    else if(c==='\n'||c==='\r'){if(c==='\r'&&t[i+1]==='\n')i++;row.push(cur);rows.push(row);row=[];cur=''}
+    else cur+=c}
+  if(cur!==''||row.length){row.push(cur);rows.push(row)}return rows.filter(r=>r.some(x=>x.trim()!==''))}
+async function copyText(t){try{await navigator.clipboard.writeText(t);toast('복사했습니다. 문자·카톡에 붙여 넣으세요')}catch(e){const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();document.execCommand('copy');a.remove();toast('복사했습니다')}}
+function pickFiles(accept,multiple,cb){const f=$('#filePick');f.accept=accept;f.multiple=multiple;f.value='';f.onchange=()=>cb([...f.files]);f.click()}
+const readText=file=>new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsText(file,'utf-8')});
+function printHtml(title,html){$('#print').innerHTML=`<h2 style="margin:0 0 6px">${esc(title)}</h2><div style="font-size:10pt;color:#555;margin-bottom:10px">${esc(DB.settings.clubName)} · 출력일 ${today()}</div>${html}`;window.print()}
+
+/* ============ 공통 계산 ============ */
+const S=()=>DB.settings;
+const activeMembers=()=>DB.members.filter(m=>m.status==='정회원');
+const memOf=id=>DB.members.find(m=>m.id===id);
+function monthAttendance(month){
+  const ms=DB.meetings.filter(m=>m.type==='정기주회'&&m.date.startsWith(month));
+  let pm=0,elig=0;
+  ms.forEach(m=>{Object.values(m.att||{}).forEach(v=>{if(v==='E')return;elig++;if(v==='P'||v==='M')pm++})});
+  return {meetings:ms.length,pm,elig,rate:elig?Math.round(pm/elig*1000)/10:null};
+}
+function memberAttendance(id,label){const [a,b]=ryRange(label);let pm=0,el=0;
+  DB.meetings.filter(m=>m.type==='정기주회'&&m.date>=a&&m.date<=b).forEach(m=>{const v=(m.att||{})[id];if(!v||v==='E')return;el++;if(v==='P'||v==='M')pm++});
+  return el?Math.round(pm/el*1000)/10:null}
+function memberBalance(id,label){const cs=DB.charges.filter(c=>c.memberId===id&&(!label||c.year===label));
+  const ch=cs.reduce((a,c)=>a+(+c.amount||0),0),pd=cs.reduce((a,c)=>a+(+c.paid||0),0);return {ch,pd,bal:ch-pd}}
+
+/* ============ 라우팅 ============ */
+const TABS={club:[['home','홈'],['members','회원명부'],['att','출석·회의'],['money','회비·기부'],['cal','일정·경조사'],['docs','공문대장'],['report','지구 보고'],['set','설정·백업']],
+  district:[['dhome','홈'],['dclubs','클럽 현황'],['dreports','월간 보고 수합'],['dfees','지구 분담금'],['devents','행사 참가 집계'],['ddocs','공문 발송'],['set','설정·백업']]};
+let VIEW=null;
+function setMode(m){S().mode=m;save();VIEW=TABS[m][0][0];render()}
+$$('.modesw button').forEach(b=>b.onclick=()=>setMode(b.dataset.m));
+function render(){const m=S().mode;if(!VIEW||!TABS[m].some(t=>t[0]===VIEW))VIEW=TABS[m][0][0];
+  $$('.modesw button').forEach(b=>b.classList.toggle('on',b.dataset.m===m));
+  $('#hSub').textContent=m==='club'?`${S().clubName} · RI ${S().district}지구 · ${ry()} 로타리연도`:`RI ${S().district}지구 사무국 · ${ry()} 로타리연도 · 클럽 ${DB.d.clubs.length}개`;
+  $('#nav').innerHTML=TABS[m].map(([k,v])=>`<button data-v="${k}" class="${k===VIEW?'on':''}">${v}</button>`).join('');
+  $$('#nav button').forEach(b=>b.onclick=()=>{VIEW=b.dataset.v;render()});
+  (VIEWS[VIEW])();}
+
+/* ============ 체크리스트 (공통) ============ */
+function checklistCard(list,prefix){const mo=thisMonth(),d=new Date().getDate();
+  return `<div class="card"><h3>이번 달 할 일 <span class="muted">(${mo}, 설정에서 항목·기한 수정)</span></h3>
+  ${list.map(t=>{const k=`${prefix}:${mo}:${t.id}`,done=!!DB.checks[k],late=!done&&d>t.day;
+    return `<label class="chk ${done?'done':''}"><input type="checkbox" data-ck="${k}" ${done?'checked':''}><span>${esc(t.title)}</span><span class="tag ${done?'ok':late?'no':'w'}" style="margin-left:auto">${done?'완료':late?'기한 지남':''} 매월 ${t.day}일</span></label>`}).join('')||'<p class="muted">항목 없음</p>'}</div>`}
+function bindChecks(){$$('[data-ck]').forEach(c=>c.onchange=()=>{if(c.checked)DB.checks[c.dataset.ck]=Date.now();else delete DB.checks[c.dataset.ck];save();render()})}
+function linksCard(){return `<div class="card"><h3>바로가기</h3><div class="row">
+  <a class="btn g" target="_blank" rel="noopener" href="${esc(S().rulesUrl)}">로타리 규정집</a>
+  <a class="btn g" target="_blank" rel="noopener" href="${esc(S().districtUrl)}">${esc(S().district)}지구 홈페이지</a>
+  <a class="btn g" target="_blank" rel="noopener" href="https://my.rotary.org/ko">My Rotary</a></div>
+  <p class="muted" style="margin-top:8px">규정집은 로컬 실행(실행.bat) 주소가 기본값입니다. 배포 주소가 생기면 설정에서 바꾸세요.</p></div>`}
+
+/* ============ 클럽: 홈 ============ */
+const VIEWS={};
+VIEWS.home=()=>{const act=activeMembers(),mo=thisMonth(),att=monthAttendance(mo),lab=ry();
+  const unpaid=act.filter(m=>memberBalance(m.id,lab).bal>0);
+  const upcoming=DB.events.filter(e=>e.date>=today()).sort((a,b)=>a.date.localeCompare(b.date)).slice(0,8);
+  const openDocs=DB.docs.filter(d=>d.status!=='완료').sort((a,b)=>(a.due||'9').localeCompare(b.due||'9')).slice(0,6);
+  const yrDon=DB.donations.filter(x=>ry(x.date)===lab);
+  $('#main').innerHTML=`<div class="stats">
+    <div class="stat"><span>정회원</span><b>${act.length}명</b></div>
+    <div class="stat"><span>${mo} 출석률</span><b>${att.rate===null?'-':att.rate+'%'}</b><span>주회 ${att.meetings}회</span></div>
+    <div class="stat"><span>${lab} 회비 미납</span><b style="color:var(--red)">${unpaid.length}명</b><span>${won(unpaid.reduce((a,m)=>a+memberBalance(m.id,lab).bal,0))}</span></div>
+    <div class="stat"><span>${lab} 재단 기부(USD)</span><b>${usd(yrDon.filter(x=>x.currency==='USD').reduce((a,x)=>a+(+x.amount||0),0))}</b></div>
+    <div class="stat"><span>처리 중 공문</span><b>${DB.docs.filter(d=>d.status!=='완료').length}건</b></div></div>
+  <div class="cols"><div>${checklistCard(S().checklist,'club')}${linksCard()}</div><div>
+    <div class="card"><h3>다가오는 일정·경조사</h3>${upcoming.length?`<table>${upcoming.map(e=>`<tr><td>${e.date}${e.time?' '+esc(e.time):''}</td><td>${e.kind==='경조사'?`<span class="tag w">${esc(e.subkind)}</span>`:''}${esc(e.title)}</td><td>${e.kind==='경조사'?(e.handled?'<span class="tag ok">처리</span>':'<span class="tag no">미처리</span>'):esc(e.place||'')}</td></tr>`).join('')}</table>`:'<p class="muted">등록된 일정이 없습니다.</p>'}</div>
+    <div class="card"><h3>회신 기한 공문</h3>${openDocs.length?`<table>${openDocs.map(d=>`<tr><td>${esc(d.no)}</td><td>${esc(d.title)}</td><td>${d.due?`<span class="tag ${d.due<today()?'no':'w'}">기한 ${d.due}</span>`:''}</td></tr>`).join('')}</table>`:'<p class="muted">처리할 공문이 없습니다.</p>'}</div></div></div>`;
+  bindChecks();};
+
+/* ============ 클럽: 회원명부 ============ */
+let mQ='',mF='정회원';
+VIEWS.members=()=>{const lab=ry();
+  const list=DB.members.filter(m=>(mF==='전체'||m.status===mF)&&(!mQ||[m.name,m.role,m.classification,m.phone,m.memo].join(' ').includes(mQ)||(digits(mQ).length>=3&&digits(m.phone).includes(digits(mQ))))).sort((a,b)=>a.name.localeCompare(b.name,'ko'));
+  $('#main').innerHTML=`<div class="card"><div class="row">
+    <input id="mQ" placeholder="이름·직책·직업분류·전화 검색" value="${esc(mQ)}" style="flex:1;min-width:180px">
+    <select id="mF" style="width:auto">${['전체',...MSTAT].map(s=>`<option ${s===mF?'selected':''}>${s}</option>`).join('')}</select>
+    <button class="btn" id="mAdd">＋ 회원 등록</button><button class="btn g" id="mImp">CSV 불러오기</button><button class="btn g" id="mExp">CSV 내보내기</button><button class="btn g" id="mPrint">명부 인쇄</button></div>
+    <p class="muted">표시 ${list.length}명 / 전체 ${DB.members.length}명. CSV 열 순서: 이름, 직책, 직업분류, 전화, 이메일, 입회일(YYYY-MM-DD), 배우자, 상태, 메모</p>
+    <div class="scroll"><table><tr><th>이름</th><th>직책</th><th>직업분류</th><th>전화</th><th>입회일</th><th>상태</th><th class="num">${lab} 출석률</th><th class="num">회비 잔액</th><th></th></tr>
+    ${list.map(m=>{const a=memberAttendance(m.id,lab),b=memberBalance(m.id,lab);return `<tr><td><b>${esc(m.name)}</b>${m.phf?` <span class="tag">${esc(m.phf)}</span>`:''}</td><td>${esc(m.role)}</td><td>${esc(m.classification)}</td><td>${esc(fmtPhone(m.phone))}</td><td>${esc(m.joined)}</td><td><span class="tag ${m.status==='정회원'?'ok':m.status==='퇴회'?'no':''}">${m.status}</span></td><td class="num">${a===null?'-':a+'%'}</td><td class="num" style="${b.bal>0?'color:var(--red)':''}">${b.ch?won(b.bal):'-'}</td><td><button class="btn g sm" data-e="${m.id}">수정</button></td></tr>`}).join('')||'<tr><td colspan="9" class="muted">회원이 없습니다. 「회원 등록」 또는 「CSV 불러오기」로 시작하세요.</td></tr>'}</table></div></div>`;
+  $('#mQ').oninput=e=>{mQ=e.target.value;const p=e.target.selectionStart;VIEWS.members();$('#mQ').focus();$('#mQ').setSelectionRange(p,p)};
+  $('#mF').onchange=e=>{mF=e.target.value;VIEWS.members()};
+  $('#mAdd').onclick=()=>memberForm();
+  $$('[data-e]').forEach(b=>b.onclick=()=>memberForm(b.dataset.e));
+  $('#mExp').onclick=()=>dl(`${S().clubName}_회원명부_${today()}.csv`,toCsv([['이름','직책','직업분류','전화','이메일','입회일','배우자','상태','메모','PHF·기부 등급'],...DB.members.map(m=>[m.name,m.role,m.classification,fmtPhone(m.phone),m.email,m.joined,m.spouse,m.status,m.memo,m.phf])]),'text/csv');
+  $('#mImp').onclick=()=>pickFiles('.csv',false,async fs=>{const rows=parseCsv(await readText(fs[0]));if(!rows.length)return;
+    const start=/이름/.test(rows[0][0])?1:0;let add=0,upd=0;
+    rows.slice(start).forEach(r=>{const [name,role,classification,phone,email,joined,spouse,status,memo]=r.map(x=>(x||'').trim());if(!name)return;
+      const ex=DB.members.find(m=>m.name===name&&(!phone||digits(m.phone)===digits(phone)));
+      const o={name,role:role||'',classification:classification||'',phone:phone||'',email:email||'',joined:joined||'',spouse:spouse||'',status:MSTAT.includes(status)?status:'정회원',memo:memo||''};
+      if(ex){Object.assign(ex,o);upd++}else{DB.members.push({id:uid(),phf:'',leftAt:'',...o});add++}});
+    save();render();toast(`추가 ${add}명 · 갱신 ${upd}명`)});
+  $('#mPrint').onclick=()=>printHtml('회원명부',`<table border="1" cellspacing="0" cellpadding="4" style="border-collapse:collapse;width:100%"><tr><th>번호</th><th>이름</th><th>직책</th><th>직업분류</th><th>전화</th><th>입회일</th></tr>${activeMembers().sort((a,b)=>a.name.localeCompare(b.name,'ko')).map((m,i)=>`<tr><td>${i+1}</td><td>${esc(m.name)}</td><td>${esc(m.role)}</td><td>${esc(m.classification)}</td><td>${esc(fmtPhone(m.phone))}</td><td>${esc(m.joined)}</td></tr>`).join('')}</table>`);
+};
+function memberForm(id){const m=id?memOf(id):{id:uid(),name:'',role:'',classification:'',phone:'',email:'',joined:today(),spouse:'',status:'정회원',memo:'',phf:'',leftAt:''};
+  const don=id?DB.donations.filter(x=>x.memberId===id):[];
+  openModal(`<h2>${id?'회원 정보':'회원 등록'}</h2><div class="g3">
+   <div><label>이름</label><input id="fN" value="${esc(m.name)}"></div><div><label>클럽 직책</label><input id="fR" value="${esc(m.role)}" placeholder="회장, 총무, 회원 등"></div><div><label>직업분류</label><input id="fC" value="${esc(m.classification)}"></div>
+   <div><label>전화</label><input id="fP" value="${esc(m.phone)}"></div><div><label>이메일</label><input id="fE" value="${esc(m.email)}"></div><div><label>입회일</label><input id="fJ" type="date" value="${esc(m.joined)}"></div>
+   <div><label>배우자</label><input id="fS" value="${esc(m.spouse)}"></div><div><label>상태</label><select id="fT">${MSTAT.map(s=>`<option ${s===m.status?'selected':''}>${s}</option>`).join('')}</select></div><div><label>퇴회일 (퇴회 시)</label><input id="fL" type="date" value="${esc(m.leftAt)}"></div></div>
+   <label style="margin-top:8px">기부 인정 등급 메모 (예: PHF+2, 메이저 도너)</label><input id="fH" value="${esc(m.phf)}">
+   <label style="margin-top:8px">메모</label><textarea id="fM">${esc(m.memo)}</textarea>
+   ${don.length?`<p class="muted">기부 기록 ${don.length}건 · USD 합계 ${usd(don.filter(x=>x.currency==='USD').reduce((a,x)=>a+(+x.amount||0),0))}</p>`:''}
+   <div class="foot">${id?'<button class="btn r" id="fDel">삭제</button>':''}<button class="btn g" onclick="closeModal()">닫기</button><button class="btn" id="fOk">저장</button></div>`);
+  $('#fOk').onclick=()=>{const name=$('#fN').value.trim();if(!name)return alert('이름을 입력하세요');
+    const prev=m.status;Object.assign(m,{name,role:$('#fR').value.trim(),classification:$('#fC').value.trim(),phone:$('#fP').value.trim(),email:$('#fE').value.trim(),joined:$('#fJ').value,spouse:$('#fS').value.trim(),status:$('#fT').value,leftAt:$('#fL').value,phf:$('#fH').value.trim(),memo:$('#fM').value});
+    if(m.status==='퇴회'&&prev!=='퇴회'&&!m.leftAt)m.leftAt=today();
+    if(!id)DB.members.push(m);save();closeModal();render();toast('저장했습니다')};
+  if(id)$('#fDel').onclick=()=>{if(!confirm('회원을 삭제하면 출석·회비 기록의 연결도 끊깁니다. 보통은 상태를 「퇴회」로 바꾸는 것을 권합니다. 그래도 삭제할까요?'))return;
+    DB.members=DB.members.filter(x=>x.id!==id);save();closeModal();render()};}
+
+/* ============ 클럽: 출석·회의 ============ */
+let attMonth=thisMonth();
+VIEWS.att=()=>{const ms=DB.meetings.filter(m=>m.date.startsWith(attMonth)).sort((a,b)=>a.date.localeCompare(b.date));const a=monthAttendance(attMonth);
+  $('#main').innerHTML=`<div class="card"><div class="row"><label style="margin:0">월</label><input type="month" id="aM" value="${attMonth}" style="width:auto">
+    <button class="btn" id="aAdd">＋ 주회·회의 등록</button><button class="btn g" id="aPrint">월 출석부 인쇄</button></div>
+    <div class="note">출석률 = (출석 + 메이크업) ÷ (정기주회 대상 인원 − 면제). 정회원만 대상입니다. 지구 보고 기준과 다르면 지구 공문 기준을 따르세요.</div>
+    <div class="stats" style="margin-top:10px"><div class="stat"><span>정기주회</span><b>${a.meetings}회</b></div><div class="stat"><span>월 출석률</span><b>${a.rate===null?'-':a.rate+'%'}</b></div><div class="stat"><span>출석+메이크업 / 대상</span><b>${a.pm} / ${a.elig}</b></div></div>
+    <table><tr><th>날짜</th><th>구분</th><th>제목·연사</th><th class="num">출석</th><th class="num">메이크업</th><th class="num">결석</th><th class="num">출석률</th><th></th></tr>
+    ${ms.map(m=>{const v=Object.values(m.att||{});const c=k=>v.filter(x=>x===k).length;const el=v.length-c('E');return `<tr><td>${m.date}</td><td>${esc(m.type)}</td><td>${esc(m.title)}</td><td class="num">${c('P')}</td><td class="num">${c('M')}</td><td class="num">${c('A')}</td><td class="num">${el?Math.round((c('P')+c('M'))/el*1000)/10+'%':'-'}</td><td><button class="btn g sm" data-e="${m.id}">출석·회의록</button></td></tr>`}).join('')||'<tr><td colspan="8" class="muted">이 달 등록된 회의가 없습니다.</td></tr>'}</table></div>`;
+  $('#aM').onchange=e=>{attMonth=e.target.value;VIEWS.att()};
+  $('#aAdd').onclick=()=>meetingForm();
+  $$('[data-e]').forEach(b=>b.onclick=()=>meetingForm(b.dataset.e));
+  $('#aPrint').onclick=()=>{const ms2=ms.filter(m=>m.type==='정기주회');const mk={P:'○',M:'M',A:'×',E:'면'};
+    printHtml(`${attMonth} 출석부`,`<table border="1" cellspacing="0" cellpadding="3" style="border-collapse:collapse;width:100%"><tr><th>이름</th>${ms2.map(m=>`<th>${m.date.slice(5)}</th>`).join('')}</tr>${activeMembers().sort((a,b)=>a.name.localeCompare(b.name,'ko')).map(p=>`<tr><td>${esc(p.name)}</td>${ms2.map(m=>`<td style="text-align:center">${mk[(m.att||{})[p.id]]||''}</td>`).join('')}</tr>`).join('')}</table><p>○ 출석 · M 메이크업 · × 결석 · 면 면제 / 월 출석률 ${a.rate===null?'-':a.rate+'%'}</p>`)};
+};
+function meetingForm(id){const m=id?DB.meetings.find(x=>x.id===id):{id:uid(),date:today(),type:'정기주회',title:'',guests:'',minutes:'',att:{}};
+  const mem=activeMembers().sort((a,b)=>a.name.localeCompare(b.name,'ko'));
+  if(!id)mem.forEach(p=>m.att[p.id]='A');
+  const L={P:'출석',M:'메이크업',A:'결석',E:'면제'};
+  openModal(`<h2>${id?'회의 기록':'회의 등록'}</h2><div class="g3"><div><label>날짜</label><input id="gD" type="date" value="${m.date}"></div>
+   <div><label>구분</label><select id="gT">${['정기주회','이사회','특별회의','기타'].map(t=>`<option ${t===m.type?'selected':''}>${t}</option>`).join('')}</select></div>
+   <div><label>제목·연사</label><input id="gTi" value="${esc(m.title)}"></div></div>
+   <h3 style="font-size:15px;margin:14px 0 6px">출석 체크 <button class="btn g sm" id="allP">전원 출석</button></h3>
+   <div class="scroll" style="max-height:300px"><table>${mem.map(p=>`<tr><td>${esc(p.name)} <span class="muted">${esc(p.role)}</span></td><td style="text-align:right"><span class="att" data-p="${p.id}">${Object.keys(L).map(k=>`<button class="${k} ${(m.att[p.id]||'A')===k?'on':''}" data-k="${k}">${L[k]}</button>`).join('')}</span></td></tr>`).join('')||'<tr><td class="muted">정회원이 없습니다. 회원명부부터 등록하세요.</td></tr>'}</table></div>
+   <label style="margin-top:10px">내빈·방문 로타리안</label><input id="gG" value="${esc(m.guests)}">
+   <label style="margin-top:8px">회의록 (안건·결정 사항)</label><textarea id="gM" style="min-height:120px" placeholder="1. 안건:&#10;   결정:&#10;2. 안건:&#10;   결정:">${esc(m.minutes)}</textarea>
+   <div class="foot">${id?'<button class="btn r" id="gDel">삭제</button>':''}<button class="btn g" id="gPr">회의록 인쇄</button><button class="btn g" onclick="closeModal()">닫기</button><button class="btn" id="gOk">저장</button></div>`);
+  const att={...m.att};
+  $$('#modal .att').forEach(g=>g.querySelectorAll('button').forEach(b=>b.onclick=()=>{att[g.dataset.p]=b.dataset.k;g.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b))}));
+  $('#allP').onclick=()=>{$$('#modal .att').forEach(g=>{att[g.dataset.p]='P';g.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x.dataset.k==='P'))})};
+  const collect=()=>Object.assign(m,{date:$('#gD').value,type:$('#gT').value,title:$('#gTi').value,guests:$('#gG').value,minutes:$('#gM').value,att});
+  $('#gOk').onclick=()=>{collect();if(!id)DB.meetings.push(m);save();closeModal();render();toast('저장했습니다')};
+  $('#gPr').onclick=()=>{collect();const v=Object.entries(m.att);const names=k=>v.filter(([,x])=>x===k).map(([i])=>memOf(i)?.name).filter(Boolean).join(', ');
+    printHtml(`${m.type} 회의록 (${m.date})`,`<p><b>제목·연사:</b> ${esc(m.title)}</p><p><b>출석:</b> ${esc(names('P'))}</p><p><b>메이크업:</b> ${esc(names('M'))}</p><p><b>결석:</b> ${esc(names('A'))}</p><p><b>내빈:</b> ${esc(m.guests)}</p><hr><div style="white-space:pre-wrap">${esc(m.minutes)}</div><br><br><p style="text-align:right">회장 ____________ (인) &nbsp; 총무 ____________ (인)</p>`)};
+  if(id)$('#gDel').onclick=()=>{if(!confirm('이 회의 기록을 삭제할까요?'))return;DB.meetings=DB.meetings.filter(x=>x.id!==id);save();closeModal();render()};}
+
+/* ============ 클럽: 회비·기부 ============ */
+let monYear=ry();
+VIEWS.money=()=>{const act=DB.members.filter(m=>m.status!=='퇴회'||DB.charges.some(c=>c.memberId===m.id&&c.year===monYear)).sort((a,b)=>a.name.localeCompare(b.name,'ko'));
+  const rows=act.map(m=>({m,...memberBalance(m.id,monYear)}));const tot=rows.reduce((a,r)=>({ch:a.ch+r.ch,pd:a.pd+r.pd}),{ch:0,pd:0});
+  const don=DB.donations.filter(x=>ry(x.date)===monYear).sort((a,b)=>b.date.localeCompare(a.date));
+  const byFund={};don.forEach(x=>{const k=x.fund+' '+x.currency;byFund[k]=(byFund[k]||0)+(+x.amount||0)});
+  const years=[...new Set([ry(),...DB.charges.map(c=>c.year),...DB.donations.map(x=>ry(x.date))])].sort().reverse();
+  $('#main').innerHTML=`<div class="card"><div class="row"><label style="margin:0">로타리연도</label><select id="yY" style="width:auto">${years.map(y=>`<option ${y===monYear?'selected':''}>${y}</option>`).join('')}</select>
+    <button class="btn" id="yCh">회비 일괄 부과</button><button class="btn g" id="yUn">미납 안내문 복사</button><button class="btn g" id="yCsv">회비 CSV</button></div>
+    <div class="stats" style="margin-top:10px"><div class="stat"><span>부과</span><b>${won(tot.ch)}</b></div><div class="stat"><span>납부</span><b style="color:var(--ok)">${won(tot.pd)}</b></div><div class="stat"><span>미납</span><b style="color:var(--red)">${won(tot.ch-tot.pd)}</b></div><div class="stat"><span>수납률</span><b>${tot.ch?Math.round(tot.pd/tot.ch*100)+'%':'-'}</b></div></div>
+    <div class="scroll"><table><tr><th>이름</th><th>상태</th><th class="num">부과</th><th class="num">납부</th><th class="num">잔액</th><th></th></tr>
+    ${rows.map(r=>`<tr><td>${esc(r.m.name)}</td><td>${r.m.status}</td><td class="num">${won(r.ch)}</td><td class="num">${won(r.pd)}</td><td class="num" style="${r.ch-r.pd>0?'color:var(--red);font-weight:700':''}">${won(r.ch-r.pd)}</td><td><button class="btn g sm" data-pay="${r.m.id}">납부 기록</button></td></tr>`).join('')||'<tr><td colspan="6" class="muted">회원이 없습니다.</td></tr>'}</table></div></div>
+  <div class="card"><div class="row"><h3 style="margin:0">재단·기부 기록 (${monYear})</h3><button class="btn" id="dAdd" style="margin-left:auto">＋ 기부 기록</button><button class="btn g" id="dCsv">기부 CSV</button></div>
+    <div style="margin:8px 0">${Object.entries(byFund).map(([k,v])=>`<span class="tag">${esc(k)} ${k.endsWith('USD')?usd(v):won(v)}</span>`).join('')||'<span class="muted">기록 없음</span>'}</div>
+    <div class="note">클럽 내부 관리용 기록입니다. 기부 인정(PHF 등)의 공식 기준은 My Rotary·재단 보고서가 우선입니다.</div>
+    <div class="scroll"><table><tr><th>날짜</th><th>회원</th><th>기금</th><th class="num">금액</th><th>메모</th><th></th></tr>${don.map(x=>`<tr><td>${x.date}</td><td>${esc(memOf(x.memberId)?.name||'클럽')}</td><td>${esc(x.fund)}</td><td class="num">${x.currency==='USD'?usd(x.amount):won(x.amount)}</td><td class="muted">${esc(x.memo)}</td><td><button class="btn g sm" data-dd="${x.id}">삭제</button></td></tr>`).join('')}</table></div></div>`;
+  $('#yY').onchange=e=>{monYear=e.target.value;VIEWS.money()};
+  $('#yCh').onclick=()=>{openModal(`<h2>회비 일괄 부과 (정회원 ${activeMembers().length}명)</h2><div class="g3"><div><label>로타리연도</label><input id="cY" value="${monYear}"></div>
+     <div><label>항목</label><select id="cK">${['연회비','상반기 회비','하반기 회비','분기 회비','입회비','특별회비','기타'].map(k=>`<option>${k}</option>`).join('')}</select></div><div><label>1인 금액(원)</label><input id="cA" type="number" step="10000"></div></div>
+     <div class="note">이미 같은 연도·항목이 부과된 회원은 건너뜁니다. 명예회원·휴회 회원은 부과하지 않습니다.</div>
+     <div class="foot"><button class="btn g" onclick="closeModal()">취소</button><button class="btn" id="cOk">부과</button></div>`);
+    $('#cOk').onclick=()=>{const y=$('#cY').value.trim(),k=$('#cK').value,a=+$('#cA').value;if(!a)return alert('금액을 입력하세요');let n=0;
+      activeMembers().forEach(m=>{if(DB.charges.some(c=>c.memberId===m.id&&c.year===y&&c.kind===k))return;DB.charges.push({id:uid(),memberId:m.id,year:y,kind:k,amount:a,paid:0,paidAt:'',memo:''});n++});
+      save();closeModal();render();toast(`${n}명에게 ${k} 부과`)}};
+  $$('[data-pay]').forEach(b=>b.onclick=()=>payForm(b.dataset.pay));
+  $('#yUn').onclick=()=>{const un=rows.filter(r=>r.ch-r.pd>0);if(!un.length)return toast('미납자가 없습니다');
+    const txt=un.map(r=>`[${S().clubName}] ${r.m.name} 회원님, ${monYear} 회비 미납액 ${won(r.ch-r.pd)} 안내드립니다.${S().bank?' 입금 계좌: '+S().bank:''} 이미 납부하셨다면 양해 부탁드립니다.`).join('\n\n');
+    openModal(`<h2>미납 안내문 (${un.length}명)</h2><p class="muted">자동 발송하지 않습니다. 복사해서 문자·카톡으로 보내세요.</p><textarea id="unT" style="min-height:300px">${esc(txt)}</textarea><div class="foot"><button class="btn g" onclick="closeModal()">닫기</button><button class="btn" id="unC">전체 복사</button></div>`);
+    $('#unC').onclick=()=>copyText($('#unT').value)};
+  $('#yCsv').onclick=()=>dl(`${S().clubName}_회비_${monYear}.csv`,toCsv([['이름','항목','부과','납부','잔액','납부일','메모'],...DB.charges.filter(c=>c.year===monYear).map(c=>[memOf(c.memberId)?.name||'',c.kind,c.amount,c.paid,c.amount-c.paid,c.paidAt,c.memo])]),'text/csv');
+  $('#dAdd').onclick=donationForm;
+  $('#dCsv').onclick=()=>dl(`${S().clubName}_기부_${monYear}.csv`,toCsv([['날짜','회원','기금','통화','금액','메모'],...don.map(x=>[x.date,memOf(x.memberId)?.name||'클럽',x.fund,x.currency,x.amount,x.memo])]),'text/csv');
+  $$('[data-dd]').forEach(b=>b.onclick=()=>{if(!confirm('이 기부 기록을 삭제할까요?'))return;DB.donations=DB.donations.filter(x=>x.id!==b.dataset.dd);save();render()});
+};
+function payForm(mid){const m=memOf(mid);const cs=DB.charges.filter(c=>c.memberId===mid&&c.year===monYear);
+  openModal(`<h2>${esc(m.name)} · ${monYear} 회비</h2>${cs.length?`<table><tr><th>항목</th><th class="num">부과</th><th>납부액</th><th>납부일</th><th>메모</th></tr>${cs.map(c=>`<tr><td>${esc(c.kind)}</td><td class="num">${won(c.amount)}</td><td><input type="number" data-pa="${c.id}" value="${c.paid}" step="10000"></td><td><input type="date" data-pd="${c.id}" value="${c.paidAt}"></td><td><input data-pm="${c.id}" value="${esc(c.memo)}"></td></tr>`).join('')}</table>`:'<p class="muted">부과된 회비가 없습니다.</p>'}
+   <div class="g3" style="margin-top:10px"><div><label>개별 항목 추가</label><input id="xK" placeholder="예: 특별회비"></div><div><label>금액</label><input id="xA" type="number" step="10000"></div><div style="align-self:end"><button class="btn g" id="xAdd" style="width:100%">추가</button></div></div>
+   <div class="foot"><button class="btn g" id="pFull">전액 납부 처리</button><button class="btn g" onclick="closeModal()">닫기</button><button class="btn" id="pOk">저장</button></div>`);
+  const apply=()=>cs.forEach(c=>{c.paid=+$(`[data-pa="${c.id}"]`).value||0;c.paidAt=$(`[data-pd="${c.id}"]`).value;c.memo=$(`[data-pm="${c.id}"]`).value});
+  $('#pOk').onclick=()=>{apply();save();closeModal();render();toast('저장했습니다')};
+  $('#pFull').onclick=()=>{cs.forEach(c=>{$(`[data-pa="${c.id}"]`).value=c.amount;if(!$(`[data-pd="${c.id}"]`).value)$(`[data-pd="${c.id}"]`).value=today()})};
+  $('#xAdd').onclick=()=>{const k=$('#xK').value.trim(),a=+$('#xA').value;if(!k||!a)return;apply();DB.charges.push({id:uid(),memberId:mid,year:monYear,kind:k,amount:a,paid:0,paidAt:'',memo:''});save();payForm(mid)};}
+function donationForm(){const mem=DB.members.filter(m=>m.status!=='퇴회').sort((a,b)=>a.name.localeCompare(b.name,'ko'));
+  openModal(`<h2>기부 기록</h2><div class="g3"><div><label>날짜</label><input id="nD" type="date" value="${today()}"></div>
+   <div><label>회원</label><select id="nM"><option value="">클럽 명의</option>${mem.map(m=>`<option value="${m.id}">${esc(m.name)}</option>`).join('')}</select></div>
+   <div><label>기금</label><select id="nF">${FUNDS.map(f=>`<option>${f}</option>`).join('')}</select></div>
+   <div><label>통화</label><select id="nC"><option>USD</option><option>KRW</option></select></div><div><label>금액</label><input id="nA" type="number" step="0.01"></div><div><label>메모</label><input id="nMe"></div></div>
+   <div class="foot"><button class="btn g" onclick="closeModal()">취소</button><button class="btn" id="nOk">저장</button></div>`);
+  $('#nOk').onclick=()=>{const a=+$('#nA').value;if(!a)return alert('금액을 입력하세요');DB.donations.push({id:uid(),date:$('#nD').value,memberId:$('#nM').value||null,fund:$('#nF').value,currency:$('#nC').value,amount:a,memo:$('#nMe').value});save();closeModal();render()};}
+
+/* ============ 클럽: 일정·경조사 ============ */
+VIEWS.cal=()=>{const up=DB.events.filter(e=>e.date>=ymd(Date.now()-30*864e5)).sort((a,b)=>a.date.localeCompare(b.date));
+  $('#main').innerHTML=`<div class="card"><div class="row"><h3 style="margin:0">일정·경조사 (최근 30일 이후)</h3><button class="btn" id="eAdd" style="margin-left:auto">＋ 행사</button><button class="btn y" id="eAdd2">＋ 경조사</button></div>
+   <div class="scroll" style="margin-top:10px"><table><tr><th>날짜</th><th>구분</th><th>내용</th><th>장소</th><th>관련 회원</th><th>처리</th><th></th></tr>
+   ${up.map(e=>`<tr><td>${e.date}${e.time?' '+esc(e.time):''}</td><td>${e.kind==='경조사'?`<span class="tag w">${esc(e.subkind)}</span>`:'<span class="tag">행사</span>'}</td><td>${esc(e.title)}</td><td>${esc(e.place)}</td><td>${esc(memOf(e.memberId)?.name||'')}</td><td>${e.kind==='경조사'?(e.handled?'<span class="tag ok">완료</span>':'<span class="tag no">미처리</span>'):''}</td><td><button class="btn g sm" data-e="${e.id}">수정</button></td></tr>`).join('')||'<tr><td colspan="7" class="muted">일정이 없습니다.</td></tr>'}</table></div></div>`;
+  $('#eAdd').onclick=()=>eventForm(null,'행사');$('#eAdd2').onclick=()=>eventForm(null,'경조사');
+  $$('[data-e]').forEach(b=>b.onclick=()=>eventForm(b.dataset.e));};
+function eventForm(id,kind){const e=id?DB.events.find(x=>x.id===id):{id:uid(),date:today(),time:'',kind,subkind:'부고',title:'',place:'',memberId:'',handled:false,memo:''};
+  const mem=DB.members.filter(m=>m.status!=='퇴회').sort((a,b)=>a.name.localeCompare(b.name,'ko'));const g=e.kind==='경조사';
+  openModal(`<h2>${g?'경조사':'행사·일정'}</h2><div class="g3"><div><label>날짜</label><input id="vD" type="date" value="${e.date}"></div><div><label>시간</label><input id="vT" type="time" value="${esc(e.time)}"></div>
+   ${g?`<div><label>종류</label><select id="vS">${['부고','결혼','개업·취임','입원·병문안','기타'].map(s=>`<option ${s===e.subkind?'selected':''}>${s}</option>`).join('')}</select></div>`:'<div></div>'}</div>
+   <div class="g2" style="margin-top:8px"><div><label>내용</label><input id="vTi" value="${esc(e.title)}" placeholder="${g?'예: 부친상, 자녀 결혼':'예: 창립기념식, 지구대회'}"></div><div><label>장소</label><input id="vP" value="${esc(e.place)}"></div>
+   <div><label>관련 회원</label><select id="vM"><option value="">없음</option>${mem.map(m=>`<option value="${m.id}" ${m.id===e.memberId?'selected':''}>${esc(m.name)}</option>`).join('')}</select></div>
+   ${g?`<div style="align-self:end"><label style="font-size:14px;color:var(--txt)"><input type="checkbox" id="vH" style="width:auto" ${e.handled?'checked':''}> 화환·부조·알림 처리 완료</label></div>`:''}</div>
+   <label style="margin-top:8px">메모</label><textarea id="vMe">${esc(e.memo)}</textarea>
+   ${g?'<div class="foot" style="justify-content:flex-start"><button class="btn g" id="vCopy">회원 알림 문구 복사</button></div>':''}
+   <div class="foot">${id?'<button class="btn r" id="vDel">삭제</button>':''}<button class="btn g" onclick="closeModal()">닫기</button><button class="btn" id="vOk">저장</button></div>`);
+  const col=()=>Object.assign(e,{date:$('#vD').value,time:$('#vT').value,title:$('#vTi').value,place:$('#vP').value,memberId:$('#vM').value,memo:$('#vMe').value,...(g?{subkind:$('#vS').value,handled:$('#vH').checked}:{})});
+  $('#vOk').onclick=()=>{col();if(!id)DB.events.push(e);save();closeModal();render()};
+  if(g)$('#vCopy').onclick=()=>{col();const n=memOf(e.memberId)?.name||'';copyText(`[${S().clubName} ${e.subkind} 알림]\n${n?n+' 회원 ':''}${e.title}\n일시: ${e.date}${e.time?' '+e.time:''}\n장소: ${e.place}\n${e.memo}`.trim())};
+  if(id)$('#vDel').onclick=()=>{if(!confirm('삭제할까요?'))return;DB.events=DB.events.filter(x=>x.id!==id);save();closeModal();render()};}
+
+/* ============ 공문 대장 (클럽·지구 공용) ============ */
+function docsView(store,isDistrict){const list=store.slice().sort((a,b)=>b.date.localeCompare(a.date));
+  $('#main').innerHTML=`<div class="card"><div class="row"><h3 style="margin:0">${isDistrict?'지구 공문 발송·수신 대장':'공문 수발신 대장'}</h3>
+   <button class="btn" id="oIn" style="margin-left:auto">＋ 수신</button><button class="btn" id="oOut">＋ 발신</button><button class="btn g" id="oCsv">CSV</button></div>
+   <p class="muted">발신 번호는 「${isDistrict?S().district+'지구':S().clubName}-${ry()}-일련번호」로 자동 부여됩니다.${isDistrict?' 발신 공문은 클럽별 수신 확인을 체크할 수 있습니다.':''}</p>
+   <div class="scroll"><table><tr><th>구분</th><th>문서번호</th><th>일자</th><th>${isDistrict?'수신·발신처':'발신처→수신처'}</th><th>제목</th><th>회신기한</th><th>상태</th>${isDistrict?'<th>수신 확인</th>':''}<th></th></tr>
+   ${list.map(d=>`<tr><td><span class="tag ${d.dir==='발신'?'':'w'}">${d.dir}</span></td><td>${esc(d.no)}</td><td>${d.date}</td><td>${esc(d.from)} → ${esc(d.to)}</td><td>${esc(d.title)}</td><td>${d.due?`<span class="tag ${d.status!=='완료'&&d.due<today()?'no':''}">${d.due}</span>`:''}</td><td>${d.status}</td>${isDistrict?`<td>${d.dir==='발신'?`${Object.keys(d.receipts||{}).length}/${DB.d.clubs.length}`:''}</td>`:''}<td><button class="btn g sm" data-e="${d.id}">열기</button></td></tr>`).join('')||'<tr><td colspan="9" class="muted">공문이 없습니다.</td></tr>'}</table></div></div>`;
+  $('#oIn').onclick=()=>docForm(store,isDistrict,null,'수신');$('#oOut').onclick=()=>docForm(store,isDistrict,null,'발신');
+  $$('[data-e]').forEach(b=>b.onclick=()=>docForm(store,isDistrict,b.dataset.e));
+  $('#oCsv').onclick=()=>dl(`공문대장_${today()}.csv`,toCsv([['구분','문서번호','일자','발신처','수신처','제목','회신기한','상태','메모'],...list.map(d=>[d.dir,d.no,d.date,d.from,d.to,d.title,d.due,d.status,d.memo])]),'text/csv');}
+function nextDocNo(store,isDistrict){const pre=`${isDistrict?S().district+'지구':S().clubName}-${ry()}-`;const n=store.filter(d=>d.dir==='발신'&&(d.no||'').startsWith(pre)).length+1;return pre+String(n).padStart(3,'0')}
+function docForm(store,isDistrict,id,dir){const me=isDistrict?`${S().district}지구 사무국`:S().clubName;
+  const d=id?store.find(x=>x.id===id):{id:uid(),dir,no:dir==='발신'?nextDocNo(store,isDistrict):'',date:today(),from:dir==='발신'?me:(isDistrict?'':`${S().district}지구`),to:dir==='발신'?(isDistrict?'각 클럽':`${S().district}지구 사무국`):me,title:'',due:'',status:dir==='발신'?'완료':'접수',memo:'',receipts:{}};
+  openModal(`<h2>${d.dir} 공문</h2><div class="g3"><div><label>문서번호</label><input id="oN" value="${esc(d.no)}"></div><div><label>일자</label><input id="oD" type="date" value="${d.date}"></div><div><label>상태</label><select id="oS">${DOC_ST.map(s=>`<option ${s===d.status?'selected':''}>${s}</option>`).join('')}</select></div>
+   <div><label>발신처</label><input id="oF" value="${esc(d.from)}"></div><div><label>수신처</label><input id="oT" value="${esc(d.to)}"></div><div><label>회신·제출 기한</label><input id="oDue" type="date" value="${esc(d.due)}"></div></div>
+   <label style="margin-top:8px">제목</label><input id="oTi" value="${esc(d.title)}"><label style="margin-top:8px">요지·처리 메모</label><textarea id="oM">${esc(d.memo)}</textarea>
+   ${isDistrict&&d.dir==='발신'?`<h3 style="font-size:14px;margin:12px 0 6px">클럽별 수신 확인 <button class="btn g sm" id="rcAll">전체 체크</button> <button class="btn g sm" id="rcMiss">미확인 클럽 복사</button></h3><div class="scroll" style="max-height:220px;columns:3;font-size:13px">${DB.d.clubs.map(c=>`<label style="display:block;font-size:13px;color:var(--txt)"><input type="checkbox" data-rc="${c.code}" style="width:auto" ${d.receipts?.[c.code]?'checked':''}> ${esc(c.name)}</label>`).join('')}</div>`:''}
+   <div class="foot">${id?'<button class="btn r" id="oDel">삭제</button>':''}<button class="btn g" onclick="closeModal()">닫기</button><button class="btn" id="oOk">저장</button></div>`);
+  if($('#rcAll'))$('#rcAll').onclick=()=>$$('[data-rc]').forEach(c=>c.checked=true);
+  if($('#rcMiss'))$('#rcMiss').onclick=()=>copyText(`[${S().district}지구 사무국] 공문 「${$('#oTi').value}」(${$('#oN').value}) 수신 확인 부탁드립니다.\n미확인 클럽: `+$$('[data-rc]').filter(c=>!c.checked).map(c=>DB.d.clubs.find(x=>x.code===c.dataset.rc)?.name).join(', '));
+  $('#oOk').onclick=()=>{Object.assign(d,{no:$('#oN').value,date:$('#oD').value,status:$('#oS').value,from:$('#oF').value,to:$('#oT').value,due:$('#oDue').value,title:$('#oTi').value,memo:$('#oM').value});
+    if($$('[data-rc]').length){d.receipts={};$$('[data-rc]').forEach(c=>{if(c.checked)d.receipts[c.dataset.rc]=true})}
+    if(!id)store.push(d);save();closeModal();render()};
+  if(id)$('#oDel').onclick=()=>{if(!confirm('삭제할까요?'))return;const i=store.findIndex(x=>x.id===id);store.splice(i,1);save();closeModal();render()};}
+VIEWS.docs=()=>docsView(DB.docs,false);
+VIEWS.ddocs=()=>docsView(DB.d.docs,true);
+
+/* ============ 클럽: 지구 보고 ============ */
+let repMonth=thisMonth();
+function buildReport(month){const [y,mo]=month.split('-').map(Number);const first=`${month}-01`,last=ymd(new Date(y,mo,0));
+  const a=monthAttendance(month);
+  const joined=DB.members.filter(m=>m.joined>=first&&m.joined<=last).map(m=>m.name);
+  const left=DB.members.filter(m=>m.status==='퇴회'&&m.leftAt>=first&&m.leftAt<=last).map(m=>m.name);
+  const don=DB.donations.filter(x=>x.date>=first&&x.date<=last);
+  const events=DB.events.filter(e=>e.kind==='행사'&&e.date>=first&&e.date<=last).map(e=>`${e.date} ${e.title}`);
+  return {type:'rotary-club-monthly-report',version:1,district:S().district,clubCode:S().clubCode,clubName:S().clubName,month,
+    memberCount:activeMembers().length,honoraryCount:DB.members.filter(m=>m.status==='명예회원').length,
+    newMembers:joined,leftMembers:left,meetings:a.meetings,attendanceRate:a.rate,
+    donationsUSD:Math.round(don.filter(x=>x.currency==='USD').reduce((s,x)=>s+(+x.amount||0),0)*100)/100,
+    donationsKRW:don.filter(x=>x.currency==='KRW').reduce((s,x)=>s+(+x.amount||0),0),activities:events,note:'',createdAt:new Date().toISOString()}}
+VIEWS.report=()=>{const r=buildReport(repMonth);
+  const text=`[${r.clubName} ${r.month} 월간 보고]\n정회원 ${r.memberCount}명 (명예회원 ${r.honoraryCount}명)\n신입 ${r.newMembers.length}명${r.newMembers.length?': '+r.newMembers.join(', '):''}\n퇴회 ${r.leftMembers.length}명${r.leftMembers.length?': '+r.leftMembers.join(', '):''}\n정기주회 ${r.meetings}회 · 출석률 ${r.attendanceRate===null?'-':r.attendanceRate+'%'}\n재단 기부 ${usd(r.donationsUSD)}${r.donationsKRW?' / '+won(r.donationsKRW):''}\n주요 활동: ${r.activities.join(' / ')||'-'}`;
+  $('#main').innerHTML=`<div class="card"><div class="row"><label style="margin:0">보고 월</label><input type="month" id="rM" value="${repMonth}" style="width:auto"></div>
+   <div class="note">회원명부·출석·기부·일정에 입력한 내용으로 자동 작성됩니다. 지구 사무국이 이 앱을 쓰면 <b>보고 파일(JSON)</b>을 보내고, 아니면 <b>문구 복사</b>로 카톡·메일에 붙이세요. 지구가 정한 양식이 따로 있으면 그 양식이 우선입니다.</div>
+   <div class="cols" style="margin-top:10px"><div><label>비고 (지구에 전달할 말)</label><textarea id="rNote" placeholder="예: 10월 봉사 행사 사진 별도 송부"></textarea>
+    <div class="row" style="margin-top:10px"><button class="btn" id="rJson">보고 파일 받기 (JSON)</button><button class="btn g" id="rCopy">보고 문구 복사</button></div></div>
+    <div><label>미리보기</label><pre id="rPre" style="white-space:pre-wrap;background:#f6f8fc;border:1px solid var(--line);border-radius:8px;padding:10px;font-size:13px;margin:0">${esc(text)}</pre></div></div></div>`;
+  $('#rM').onchange=e=>{repMonth=e.target.value;VIEWS.report()};
+  $('#rJson').onclick=()=>{r.note=$('#rNote').value;dl(`월간보고_${S().clubCode}_${S().clubName}_${repMonth}.json`,JSON.stringify(r,null,1),'application/json');toast('파일을 지구 사무국에 보내세요')};
+  $('#rCopy').onclick=()=>copyText(text+($('#rNote').value?`\n비고: ${$('#rNote').value}`:''));};
+
+/* ============ 지구: 홈 ============ */
+VIEWS.dhome=()=>{const cl=DB.d.clubs,mo=thisMonth(),rep=DB.d.reports[mo]||{};const sub=cl.filter(c=>rep[c.code]).length;
+  const regions=[...new Set(cl.map(c=>c.region))];const tot=cl.reduce((a,c)=>a+(+c.members||0),0);
+  const fy=DB.d.fees[ry()];const fee=fy?cl.reduce((a,c)=>{const due=(+fy.perHead||0)*(+c.members||0)+(+(fy.extra||0));const p=+(fy.byClub?.[c.code]?.paid||0);return {due:a.due+due,paid:a.paid+p}},{due:0,paid:0}):null;
+  const rates=Object.values(rep).map(x=>x.data?.attendanceRate).filter(v=>v!==null&&v!==undefined);
+  $('#main').innerHTML=`<div class="stats"><div class="stat"><span>클럽</span><b>${cl.length}개</b></div><div class="stat"><span>회원 (클럽 현황 합계)</span><b>${num(tot)}명</b></div>
+   <div class="stat"><span>${mo} 월간 보고 제출</span><b>${sub} / ${cl.length}</b></div><div class="stat"><span>제출 클럽 평균 출석률</span><b>${rates.length?Math.round(rates.reduce((a,b)=>a+b,0)/rates.length*10)/10+'%':'-'}</b></div>
+   <div class="stat"><span>${ry()} 분담금 수납</span><b>${fee&&fee.due?Math.round(fee.paid/fee.due*100)+'%':'-'}</b></div></div>
+   <div class="cols"><div>${checklistCard(DB.d.checklist,'district')}${linksCard()}</div>
+   <div class="card"><h3>지역별 회원 현황</h3><table><tr><th>지역</th><th class="num">클럽</th><th class="num">회원</th><th class="num">${mo} 보고</th></tr>
+   ${regions.map(r=>{const cs=cl.filter(c=>c.region===r);return `<tr><td>${esc(r)}</td><td class="num">${cs.length}</td><td class="num">${num(cs.reduce((a,c)=>a+(+c.members||0),0))}</td><td class="num">${cs.filter(c=>rep[c.code]).length}/${cs.length}</td></tr>`}).join('')}
+   <tr><th>합계</th><th class="num">${cl.length}</th><th class="num">${num(tot)}</th><th class="num">${sub}/${cl.length}</th></tr></table>
+   <p class="muted">초기 회원 수 출처: <a href="${SEED_META.source_url}" target="_blank" rel="noopener">3610지구 홈페이지 클럽별검색</a> (기준 ${SEED_META.as_of}). 클럽 보고 파일을 받으면 그 클럽 회원 수로 갱신됩니다.</p></div></div>`;
+  bindChecks();};
+
+/* ============ 지구: 클럽 현황 ============ */
+let dcR='전체',dcQ='';
+VIEWS.dclubs=()=>{const cl=DB.d.clubs.filter(c=>(dcR==='전체'||c.region===dcR)&&(!dcQ||[c.name,c.president,c.secretary,c.officeMgr].join(' ').includes(dcQ)));const regions=['전체',...new Set(DB.d.clubs.map(c=>c.region))];
+  $('#main').innerHTML=`<div class="card"><div class="row"><select id="dcR" style="width:auto">${regions.map(r=>`<option ${r===dcR?'selected':''}>${r}</option>`).join('')}</select>
+   <input id="dcQ" placeholder="클럽·회장·총무·사무장 검색" value="${esc(dcQ)}" style="flex:1;min-width:160px"><button class="btn" id="dcAdd">＋ 클럽</button><button class="btn g" id="dcCsv">CSV 내보내기</button><button class="btn g" id="dcImp">CSV 불러오기</button></div>
+   <p class="muted">CSV 열: 코드, 지역, 클럽명, 회원수, 회장, 총무, 사무장, 전화, 이메일, 메모 (코드가 같으면 갱신)</p>
+   <div class="scroll"><table><tr><th>지역</th><th>클럽</th><th class="num">회원</th><th>기준일</th><th>회장</th><th>총무</th><th>사무장</th><th>연락처</th><th></th></tr>
+   ${cl.map(c=>`<tr><td>${esc(c.region)}</td><td><b>${esc(c.name)}</b></td><td class="num">${num(c.members)}</td><td class="muted">${esc(c.asOf||'')}</td><td>${esc(c.president)}</td><td>${esc(c.secretary)}</td><td>${esc(c.officeMgr)}</td><td>${esc(fmtPhone(c.phone))}</td><td><button class="btn g sm" data-e="${c.code}">수정</button></td></tr>`).join('')}</table></div></div>`;
+  $('#dcR').onchange=e=>{dcR=e.target.value;VIEWS.dclubs()};
+  $('#dcQ').oninput=e=>{dcQ=e.target.value;const p=e.target.selectionStart;VIEWS.dclubs();$('#dcQ').focus();$('#dcQ').setSelectionRange(p,p)};
+  $$('[data-e]').forEach(b=>b.onclick=()=>clubForm(b.dataset.e));$('#dcAdd').onclick=()=>clubForm();
+  $('#dcCsv').onclick=()=>dl(`${S().district}지구_클럽현황_${today()}.csv`,toCsv([['코드','지역','클럽명','회원수','회장','총무','사무장','전화','이메일','메모','기준일'],...DB.d.clubs.map(c=>[c.code,c.region,c.name,c.members,c.president,c.secretary,c.officeMgr,c.phone,c.email,c.memo,c.asOf])]),'text/csv');
+  $('#dcImp').onclick=()=>pickFiles('.csv',false,async fs=>{const rows=parseCsv(await readText(fs[0]));const st=/코드/.test(rows[0]?.[0])?1:0;let a=0,u=0;
+    rows.slice(st).forEach(r=>{const [code,region,name,members,president,secretary,officeMgr,phone,email,memo]=r.map(x=>(x||'').trim());if(!code||!name)return;const ex=DB.d.clubs.find(c=>c.code===code);
+      const o={code,region,name,members:+members||0,president,secretary,officeMgr,phone,email,memo,asOf:today()};if(ex){Object.assign(ex,o);u++}else{DB.d.clubs.push(o);a++}});save();render();toast(`추가 ${a} · 갱신 ${u}`)});};
+function clubForm(code){const c=code?DB.d.clubs.find(x=>x.code===code):{code:'',region:'',name:'',members:0,asOf:today(),president:'',secretary:'',officeMgr:'',phone:'',email:'',memo:''};
+  openModal(`<h2>${code?esc(c.name):'클럽 추가'}</h2><div class="g3"><div><label>클럽 코드</label><input id="kC" value="${esc(c.code)}" ${code?'disabled':''}></div><div><label>지역</label><input id="kR" value="${esc(c.region)}"></div><div><label>클럽명</label><input id="kN" value="${esc(c.name)}"></div>
+   <div><label>회원 수</label><input id="kM" type="number" value="${c.members}"></div><div><label>회장</label><input id="kP" value="${esc(c.president)}"></div><div><label>총무</label><input id="kS" value="${esc(c.secretary)}"></div>
+   <div><label>사무장</label><input id="kO" value="${esc(c.officeMgr)}"></div><div><label>사무실 전화</label><input id="kT" value="${esc(c.phone)}"></div><div><label>이메일</label><input id="kE" value="${esc(c.email)}"></div></div>
+   <label style="margin-top:8px">메모</label><textarea id="kMe">${esc(c.memo)}</textarea>
+   <div class="foot">${code?'<button class="btn r" id="kDel">삭제</button>':''}<button class="btn g" onclick="closeModal()">닫기</button><button class="btn" id="kOk">저장</button></div>`);
+  $('#kOk').onclick=()=>{const nc=code||$('#kC').value.trim();if(!nc||!$('#kN').value.trim())return alert('코드와 클럽명을 입력하세요');if(!code&&DB.d.clubs.some(x=>x.code===nc))return alert('같은 코드가 있습니다');
+    const newM=+$('#kM').value||0;if(newM!==+c.members)c.asOf=today();
+    Object.assign(c,{code:nc,region:$('#kR').value.trim(),name:$('#kN').value.trim(),members:newM,president:$('#kP').value.trim(),secretary:$('#kS').value.trim(),officeMgr:$('#kO').value.trim(),phone:$('#kT').value.trim(),email:$('#kE').value.trim(),memo:$('#kMe').value});
+    if(!code)DB.d.clubs.push(c);save();closeModal();render()};
+  if(code)$('#kDel').onclick=()=>{if(!confirm('클럽을 목록에서 삭제할까요?'))return;DB.d.clubs=DB.d.clubs.filter(x=>x.code!==code);save();closeModal();render()};}
+
+/* ============ 지구: 월간 보고 수합 ============ */
+let drMonth=thisMonth(),drR='전체';
+VIEWS.dreports=()=>{const rep=DB.d.reports[drMonth]||{};const cl=DB.d.clubs.filter(c=>drR==='전체'||c.region===drR);const regions=['전체',...new Set(DB.d.clubs.map(c=>c.region))];
+  const miss=cl.filter(c=>!rep[c.code]);
+  $('#main').innerHTML=`<div class="card"><div class="row"><label style="margin:0">보고 월</label><input type="month" id="drM" value="${drMonth}" style="width:auto"><select id="drR" style="width:auto">${regions.map(r=>`<option ${r===drR?'selected':''}>${r}</option>`).join('')}</select>
+   <button class="btn" id="drImp">클럽 보고 파일 불러오기 (여러 개)</button><button class="btn g" id="drMiss">미제출 안내문 복사 (${miss.length})</button><button class="btn g" id="drCsv">집계 CSV</button></div>
+   <div class="note">클럽이 이 앱 「지구 보고」에서 받은 JSON 파일을 여러 개 한꺼번에 불러오면 자동 집계됩니다. 카톡·전화로 받은 보고는 「수기 입력」을 쓰세요.</div>
+   <div class="scroll"><table><tr><th>지역</th><th>클럽</th><th>제출</th><th class="num">정회원</th><th class="num">신입</th><th class="num">퇴회</th><th class="num">주회</th><th class="num">출석률</th><th class="num">기부 USD</th><th>비고</th><th></th></tr>
+   ${cl.map(c=>{const r=rep[c.code];const d=r?.data||{};return `<tr><td>${esc(c.region)}</td><td>${esc(c.name)}</td><td>${r?`<span class="tag ok">${r.via==='file'?'파일':'수기'} ${esc((r.at||'').slice(5,10))}</span>`:'<span class="tag no">미제출</span>'}</td><td class="num">${r?num(d.memberCount):''}</td><td class="num">${r?(d.newMembers||[]).length:''}</td><td class="num">${r?(d.leftMembers||[]).length:''}</td><td class="num">${r?d.meetings??'':''}</td><td class="num">${r&&d.attendanceRate!=null?d.attendanceRate+'%':''}</td><td class="num">${r?usd(d.donationsUSD):''}</td><td class="muted">${esc(d.note||'')}</td><td><button class="btn g sm" data-e="${c.code}">${r?'보기':'수기 입력'}</button></td></tr>`}).join('')}</table></div></div>`;
+  $('#drM').onchange=e=>{drMonth=e.target.value;VIEWS.dreports()};$('#drR').onchange=e=>{drR=e.target.value;VIEWS.dreports()};
+  $('#drImp').onclick=()=>pickFiles('.json',true,async files=>{let ok=0,bad=[];
+    for(const f of files){try{const d=JSON.parse(await readText(f));if(d.type!=='rotary-club-monthly-report')throw 0;
+      const c=DB.d.clubs.find(x=>x.code===String(d.clubCode))||DB.d.clubs.find(x=>x.name.replace(/\s/g,'')===String(d.clubName).replace(/\s/g,''));if(!c)throw 0;
+      (DB.d.reports[d.month]||(DB.d.reports[d.month]={}))[c.code]={at:today(),via:'file',data:d};
+      if(d.memberCount){c.members=d.memberCount;c.asOf=`${d.month} 보고`}ok++}catch(e){bad.push(f.name)}}
+    save();render();toast(`${ok}개 반영${bad.length?' · 인식 실패 '+bad.length:''}`);if(bad.length)alert('인식하지 못한 파일(클럽 코드·양식 확인):\n'+bad.join('\n'))});
+  $('#drMiss').onclick=()=>{if(!miss.length)return toast('미제출 클럽이 없습니다');copyText(`[${S().district}지구 사무국] ${drMonth} 월간 보고 제출 안내\n아직 보고가 접수되지 않은 클럽: ${miss.map(c=>c.name).join(', ')}\n확인 후 제출 부탁드립니다.`)};
+  $('#drCsv').onclick=()=>dl(`${S().district}지구_월간보고_${drMonth}.csv`,toCsv([['지역','클럽','제출','정회원','신입','퇴회','주회','출석률','기부USD','기부KRW','신입명단','퇴회명단','비고'],...DB.d.clubs.map(c=>{const r=rep[c.code],d=r?.data||{};return [c.region,c.name,r?'Y':'N',d.memberCount??'',(d.newMembers||[]).length||'',(d.leftMembers||[]).length||'',d.meetings??'',d.attendanceRate??'',d.donationsUSD??'',d.donationsKRW??'',(d.newMembers||[]).join(' '),(d.leftMembers||[]).join(' '),d.note||'']})]),'text/csv');
+  $$('[data-e]').forEach(b=>b.onclick=()=>reportForm(b.dataset.e));};
+function reportForm(code){const c=DB.d.clubs.find(x=>x.code===code);const r=(DB.d.reports[drMonth]||{})[code];const d=r?.data||{memberCount:c.members,newMembers:[],leftMembers:[],meetings:'',attendanceRate:'',donationsUSD:0,note:''};
+  openModal(`<h2>${esc(c.name)} · ${drMonth} 보고</h2>${r?`<p class="muted">접수 ${esc(r.at)} (${r.via==='file'?'파일':'수기'})</p>`:''}
+   <div class="g3"><div><label>정회원</label><input id="qM" type="number" value="${d.memberCount??''}"></div><div><label>정기주회 횟수</label><input id="qG" type="number" value="${d.meetings??''}"></div><div><label>출석률(%)</label><input id="qA" type="number" step="0.1" value="${d.attendanceRate??''}"></div>
+   <div><label>신입 명단 (쉼표)</label><input id="qN" value="${esc((d.newMembers||[]).join(', '))}"></div><div><label>퇴회 명단 (쉼표)</label><input id="qL" value="${esc((d.leftMembers||[]).join(', '))}"></div><div><label>기부 USD</label><input id="qD" type="number" step="0.01" value="${d.donationsUSD??0}"></div></div>
+   ${(d.activities||[]).length?`<p class="muted">주요 활동: ${esc(d.activities.join(' / '))}</p>`:''}
+   <label style="margin-top:8px">비고</label><textarea id="qNo">${esc(d.note||'')}</textarea>
+   <div class="foot">${r?'<button class="btn r" id="qDel">제출 취소</button>':''}<button class="btn g" onclick="closeModal()">닫기</button><button class="btn" id="qOk">저장 (제출 처리)</button></div>`);
+  const list=s=>s.split(',').map(x=>x.trim()).filter(Boolean);const nv=v=>v===''?null:+v;
+  $('#qOk').onclick=()=>{const nd={...d,type:'rotary-club-monthly-report',clubCode:code,clubName:c.name,month:drMonth,memberCount:nv($('#qM').value),meetings:nv($('#qG').value),attendanceRate:nv($('#qA').value),newMembers:list($('#qN').value),leftMembers:list($('#qL').value),donationsUSD:+$('#qD').value||0,note:$('#qNo').value};
+    (DB.d.reports[drMonth]||(DB.d.reports[drMonth]={}))[code]={at:r?.at||today(),via:r?.via||'manual',data:nd};if(nd.memberCount){c.members=nd.memberCount;c.asOf=`${drMonth} 보고`}save();closeModal();render()};
+  if(r)$('#qDel').onclick=()=>{if(!confirm('제출 기록을 지울까요?'))return;delete DB.d.reports[drMonth][code];save();closeModal();render()};}
+
+/* ============ 지구: 분담금 ============ */
+let dfY=ry();
+VIEWS.dfees=()=>{const fy=DB.d.fees[dfY]||(DB.d.fees[dfY]={perHead:0,extra:0,basis:'현재 회원 수',byClub:{}});
+  const rows=DB.d.clubs.map(c=>{const due=(+fy.perHead||0)*(+c.members||0)+(+fy.extra||0);const p=fy.byClub[c.code]||{};return {c,due,paid:+p.paid||0,at:p.at||'',memo:p.memo||''}});
+  const T=rows.reduce((a,r)=>({due:a.due+r.due,paid:a.paid+r.paid}),{due:0,paid:0});const un=rows.filter(r=>r.due>r.paid);
+  $('#main').innerHTML=`<div class="card"><div class="row"><label style="margin:0">로타리연도</label><input id="fY" value="${dfY}" style="width:100px">
+   <label style="margin:0">1인당</label><input id="fP" type="number" step="1000" value="${fy.perHead}" style="width:120px"><label style="margin:0">클럽당 정액</label><input id="fE" type="number" step="1000" value="${fy.extra||0}" style="width:120px">
+   <button class="btn" id="fSave">기준 저장</button><button class="btn g" id="fUn">미납 안내문 복사 (${un.length})</button><button class="btn g" id="fCsv">CSV</button></div>
+   <div class="note">청구액 = 1인당 금액 × 클럽 회원 수 + 클럽당 정액. 회원 수는 「클럽 현황」 값을 씁니다. 지구 예산서·결의 기준과 맞춰 입력하세요.</div>
+   <div class="stats" style="margin-top:10px"><div class="stat"><span>청구 합계</span><b>${won(T.due)}</b></div><div class="stat"><span>수납</span><b style="color:var(--ok)">${won(T.paid)}</b></div><div class="stat"><span>미수</span><b style="color:var(--red)">${won(T.due-T.paid)}</b></div><div class="stat"><span>수납률</span><b>${T.due?Math.round(T.paid/T.due*100)+'%':'-'}</b></div></div>
+   <div class="scroll"><table><tr><th>지역</th><th>클럽</th><th class="num">회원</th><th class="num">청구</th><th>납부액</th><th>납부일</th><th class="num">잔액</th><th>메모</th></tr>
+   ${rows.map(r=>`<tr><td>${esc(r.c.region)}</td><td>${esc(r.c.name)}</td><td class="num">${num(r.c.members)}</td><td class="num">${won(r.due)}</td><td><input type="number" step="10000" data-fp="${r.c.code}" value="${r.paid||''}" style="width:130px"></td><td><input type="date" data-fa="${r.c.code}" value="${r.at}" style="width:150px"></td><td class="num" style="${r.due>r.paid?'color:var(--red)':''}">${won(r.due-r.paid)}</td><td><input data-fm="${r.c.code}" value="${esc(r.memo)}"></td></tr>`).join('')}</table></div>
+   <div class="foot"><button class="btn" id="fPay">납부 내역 저장</button></div></div>`;
+  $('#fY').onchange=e=>{dfY=e.target.value.trim()||ry();VIEWS.dfees()};
+  $('#fSave').onclick=()=>{fy.perHead=+$('#fP').value||0;fy.extra=+$('#fE').value||0;save();VIEWS.dfees();toast('기준 저장')};
+  $('#fPay').onclick=()=>{$$('[data-fp]').forEach(i=>{const k=i.dataset.fp;const v=+i.value||0,a=$(`[data-fa="${k}"]`).value,m=$(`[data-fm="${k}"]`).value;if(v||a||m)fy.byClub[k]={paid:v,at:a||(v?today():''),memo:m};else delete fy.byClub[k]});save();VIEWS.dfees();toast('저장했습니다')};
+  $('#fUn').onclick=()=>{if(!un.length)return toast('미납 클럽이 없습니다');copyText(un.map(r=>`[${S().district}지구 사무국] ${r.c.name} ${dfY} 지구 분담금 미납액 ${won(r.due-r.paid)} 안내드립니다.${S().bank?' 입금 계좌: '+S().bank:''}`).join('\n\n'))};
+  $('#fCsv').onclick=()=>dl(`${S().district}지구_분담금_${dfY}.csv`,toCsv([['지역','클럽','회원','청구','납부','납부일','잔액','메모'],...rows.map(r=>[r.c.region,r.c.name,r.c.members,r.due,r.paid,r.at,r.due-r.paid,r.memo])]),'text/csv');};
+
+/* ============ 지구: 행사 참가 집계 ============ */
+VIEWS.devents=()=>{const ev=DB.d.events.slice().sort((a,b)=>b.date.localeCompare(a.date));
+  $('#main').innerHTML=`<div class="card"><div class="row"><h3 style="margin:0">행사 참가 신청 집계</h3><button class="btn" id="veAdd" style="margin-left:auto">＋ 행사</button></div>
+   <table style="margin-top:10px"><tr><th>날짜</th><th>행사</th><th class="num">1인 참가비</th><th class="num">신청 클럽</th><th class="num">총 인원</th><th class="num">참가비 합계</th><th></th></tr>
+   ${ev.map(e=>{const v=Object.values(e.byClub||{});const n=v.reduce((a,x)=>a+(+x.count||0),0);return `<tr><td>${e.date}</td><td>${esc(e.title)}</td><td class="num">${won(e.fee)}</td><td class="num">${v.filter(x=>+x.count).length}/${DB.d.clubs.length}</td><td class="num">${num(n)}</td><td class="num">${won(n*(+e.fee||0))}</td><td><button class="btn g sm" data-e="${e.id}">집계</button></td></tr>`}).join('')||'<tr><td colspan="7" class="muted">행사가 없습니다.</td></tr>'}</table></div>`;
+  $('#veAdd').onclick=()=>devForm();$$('[data-e]').forEach(b=>b.onclick=()=>devForm(b.dataset.e));};
+function devForm(id){const e=id?DB.d.events.find(x=>x.id===id):{id:uid(),title:'',date:today(),place:'',fee:0,byClub:{}};const regions=[...new Set(DB.d.clubs.map(c=>c.region))];
+  openModal(`<h2>${id?esc(e.title):'행사 등록'}</h2><div class="g3"><div><label>행사명</label><input id="xT" value="${esc(e.title)}" placeholder="예: 지구대회"></div><div><label>날짜</label><input id="xD" type="date" value="${e.date}"></div><div><label>1인 참가비</label><input id="xF" type="number" step="1000" value="${e.fee}"></div></div>
+   <div class="scroll" style="max-height:380px;margin-top:10px"><table><tr><th>클럽</th><th>인원</th><th>납부</th><th>메모</th></tr>
+   ${regions.map(r=>`<tr><th colspan="4">${esc(r)}</th></tr>`+DB.d.clubs.filter(c=>c.region===r).map(c=>{const b=e.byClub[c.code]||{};return `<tr><td>${esc(c.name)}</td><td><input type="number" min="0" data-xc="${c.code}" value="${b.count||''}" style="width:80px"></td><td><input type="checkbox" data-xp="${c.code}" style="width:auto" ${b.paid?'checked':''}></td><td><input data-xm="${c.code}" value="${esc(b.memo||'')}"></td></tr>`}).join('')).join('')}</table></div>
+   <div class="foot">${id?'<button class="btn r" id="xDel">삭제</button>':''}<button class="btn g" id="xMiss">미신청 클럽 복사</button><button class="btn g" onclick="closeModal()">닫기</button><button class="btn" id="xOk">저장</button></div>`);
+  $('#xOk').onclick=()=>{e.title=$('#xT').value.trim()||'행사';e.date=$('#xD').value;e.fee=+$('#xF').value||0;e.byClub={};
+    $$('[data-xc]').forEach(i=>{const k=i.dataset.xc,c=+i.value||0,p=$(`[data-xp="${k}"]`).checked,m=$(`[data-xm="${k}"]`).value;if(c||p||m)e.byClub[k]={count:c,paid:p,memo:m}});
+    if(!id)DB.d.events.push(e);save();closeModal();render()};
+  $('#xMiss').onclick=()=>copyText(`[${S().district}지구 사무국] 「${$('#xT').value}」(${$('#xD').value}) 참가 신청 안내\n아직 신청하지 않은 클럽: `+$$('[data-xc]').filter(i=>!(+i.value)).map(i=>DB.d.clubs.find(c=>c.code===i.dataset.xc)?.name).join(', '));
+  if(id)$('#xDel').onclick=()=>{if(!confirm('삭제할까요?'))return;DB.d.events=DB.d.events.filter(x=>x.id!==id);save();closeModal();render()};}
+
+/* ============ 설정·백업 (공용) ============ */
+VIEWS.set=()=>{const s=S(),isD=s.mode==='district';const list=isD?DB.d.checklist:s.checklist;
+  $('#main').innerHTML=`<div class="card"><h3>기본 정보</h3><div class="g3">
+   <div><label>클럽명 (클럽 모드)</label><input id="sC" value="${esc(s.clubName)}" list="clubList"><datalist id="clubList">${DB.d.clubs.map(c=>`<option value="${esc(c.name)}">`).join('')}</datalist></div>
+   <div><label>클럽 코드 (지구 보고 매칭용)</label><input id="sCC" value="${esc(s.clubCode)}"></div><div><label>지구 번호</label><input id="sD" value="${esc(s.district)}"></div>
+   <div><label>입금 계좌 (안내문에 표시)</label><input id="sB" value="${esc(s.bank)}" placeholder="예: 농협 000-0000-0000 순천중앙RC"></div>
+   <div><label>규정집 주소</label><input id="sR" value="${esc(s.rulesUrl)}"></div><div><label>지구 홈페이지</label><input id="sH" value="${esc(s.districtUrl)}"></div>
+   <div><label>잠금 PIN (비우면 해제, 10분 미사용 시 잠김)</label><input id="sPin" type="password" inputmode="numeric" value="${esc(s.pin)}"></div></div>
+   <p class="muted">클럽명을 목록에서 고르면 코드가 자동으로 채워집니다.</p><div class="foot"><button class="btn" id="sOk">저장</button></div></div>
+  <div class="card"><h3>${isD?'지구 사무국':'클럽 사무장'} 월간 할 일 항목</h3><p class="muted">한 줄에 하나: <b>매월 기한일,할 일</b> (예: 5,월간 출석 보고 작성·제출). 기본 항목은 예시이니 지구 공문 기준으로 고치세요.</p>
+   <textarea id="sL" style="min-height:150px">${list.map(t=>`${t.day},${t.title}`).join('\n')}</textarea><div class="foot"><button class="btn" id="sLOk">할 일 저장</button></div></div>
+  <div class="card"><h3>백업·옮기기</h3><p class="muted">데이터는 <b>이 PC의 이 브라우저에만</b> 저장되고 외부로 전송되지 않습니다. 브라우저 기록 삭제 시 사라지니 매주 백업 파일을 받아 두세요. 사무장 교체 때는 백업 파일을 넘기면 그대로 이어집니다.</p>
+   <div class="row"><button class="btn" id="bE">전체 백업 받기</button><button class="btn g" id="bI">백업 불러오기</button><button class="btn r" id="bR">전체 초기화</button></div></div>`;
+  $('#sC').onchange=()=>{const c=DB.d.clubs.find(x=>x.name===$('#sC').value);if(c)$('#sCC').value=c.code};
+  $('#sOk').onclick=()=>{Object.assign(s,{clubName:$('#sC').value.trim(),clubCode:$('#sCC').value.trim(),district:$('#sD').value.trim(),bank:$('#sB').value.trim(),rulesUrl:$('#sR').value.trim(),districtUrl:$('#sH').value.trim(),pin:$('#sPin').value.trim()});save();render();toast('저장했습니다')};
+  $('#sLOk').onclick=()=>{const out=[];for(const l of $('#sL').value.split('\n').map(x=>x.trim()).filter(Boolean)){const i=l.indexOf(',');const day=+l.slice(0,i);const title=l.slice(i+1).trim();if(i<0||!day||day>31||!title)return alert('형식 오류: '+l);out.push({id:(isD?'d':'c')+uid(),day,title})}
+    if(isD)DB.d.checklist=out;else s.checklist=out;save();render();toast('할 일 저장')};
+  $('#bE').onclick=()=>dl(`로타리사무국_백업_${today()}.json`,JSON.stringify(DB),'application/json');
+  $('#bI').onclick=()=>pickFiles('.json',false,async fs=>{try{const d=JSON.parse(await readText(fs[0]));if(!d.settings||!d.members)throw 0;if(!confirm('현재 데이터를 백업 내용으로 바꿉니다. 계속할까요?'))return;localStorage.setItem(KEY,JSON.stringify(d));load();render();toast('불러오기 완료')}catch(e){alert('올바른 백업 파일이 아닙니다')}});
+  $('#bR').onclick=()=>{if(prompt('모든 데이터를 지웁니다. 계속하려면 "초기화"를 입력하세요')!=='초기화')return;DB=defaults();save();render()};};
+
+/* ============ 잠금 ============ */
+function lockCheck(){if(!S().pin)return;$('#lock').style.display='flex';$('#lockPin').focus();
+  const go=()=>{if($('#lockPin').value===S().pin){$('#lock').style.display='none';$('#lockPin').value=''}else toast('PIN이 틀렸습니다')};
+  $('#lockBtn').onclick=go;$('#lockPin').onkeydown=e=>{if(e.key==='Enter')go()}}
+let idle=Date.now();['click','keydown','touchstart'].forEach(ev=>document.addEventListener(ev,()=>idle=Date.now()));
+setInterval(()=>{if(S().pin&&Date.now()-idle>10*60e3&&$('#lock').style.display!=='flex')lockCheck()},5000);
+render();lockCheck();
+</script>
+</body>
+</html>
